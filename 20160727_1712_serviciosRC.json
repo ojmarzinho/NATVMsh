@@ -1,0 +1,1502 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "String",
+            "defaultValue": "adminpanw",
+            "metadata": {
+        	"description": "Username for all VMs"
+      		}
+          },
+          "adminPassword": {
+            "type": "Securestring",
+            "metadata": {
+        	"description": "Password for all VMs"
+      		}
+          },
+        "dnsNameforVMSeries": {
+            "defaultValue": "panwngfw",
+            "type": "string",
+            "metadata": {
+        	"description": "Globally unique DNS name for the VM-Series Firewall Management interface"
+            }
+      		},
+        "dnsNameForNATVM1": {
+      		"type": "string",
+      		"metadata": {
+        	"description": "Globally unique DNS name to Global Protect Portal interface of VM-Series firewall"
+      		}
+    	},
+        "dnsNameForNATVM2": {
+      		"type": "string",
+      		"metadata": {
+        	"description": "Globally unique DNS name to IPSEC interface of VM-Series firewall"
+      		}
+      	},
+        "dnsNameForVIP1": {
+      		"type": "string",
+      		"metadata": {
+        	"description": "Globally unique DNS name for Load Balancer VIP 1"
+      		}
+        },
+        "dnsNameForVIP2": {
+      		"type": "string",
+      		"metadata": {
+        	"description": "Globally unique DNS name for Load Balancer VIP 2"
+      		}
+        },
+        "virtualMachines_database_vm_name": {
+            "defaultValue": "database-vm",
+            "type": "String"
+        },
+ 
+ 		"gvmSize": {
+      		"type": "string",
+		    "defaultValue": "Standard_A1",
+      		"allowedValues": [
+        		"Standard_A1",
+        		"Standard_A2",
+        		"Standard_A3",
+        		"Standard_A4",
+        		"Standard_D1",
+        		"Standard_D2",
+        		"Standard_D3",
+        		"Standard_D4"
+      			],
+      		"metadata": {
+        	"description": "This is the size of NAT Ubuntu VMs"
+      }
+    },
+    "ubuntuOSVersion": {
+      "type": "string",
+      "defaultValue": "14.04.2-LTS",
+      "allowedValues": [
+         "14.04.2-LTS"
+      ],
+      "metadata": {
+      "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version"
+      }
+    },
+        
+        "virtualMachines_NATVM1_name": {
+            "defaultValue": "NATVM1",
+            "type": "String"
+        },
+        "virtualMachines_NATVM2_name": {
+            "defaultValue": "NATVM2",
+            "type": "String"
+        },
+        "virtualMachines_NATVM3_name": {
+            "defaultValue": "NATVM3",
+            "type": "String"
+        },
+        "virtualMachines_VMSeries_name": {
+            "defaultValue": "panwngfw",
+            "type": "String",
+            "metadata": {
+        	"description": "Name of the Palo Alto VM series"
+      		}
+        },
+        "loadbalancer_name": {
+            "defaultValue": "loadBalancer1",
+            "type": "String",
+            "metadata": {
+        	"description": "Name of the Load Balancer"
+      		}
+        },
+        "virtualMachines_webserver_vm_name": {
+            "defaultValue": "webserver-vm",
+            "type": "String"
+        },
+        "networkInterfaces_database_vm_name": {
+            "defaultValue": "database-vm",
+            "type": "String"
+        },
+         "networkInterfaces_webserver_vm_name": {
+            "defaultValue": "webserver-vm",
+            "type": "String"
+        },
+        "networkInterfaces_natvm1_name": {
+            "defaultValue": "natvm1",
+            "type": "String"
+        },
+        "networkInterfaces_natvm2_name": {
+            "defaultValue": "natvm2",
+            "type": "String"
+        },
+        "networkInterfaces_natvm3_name": {
+            "defaultValue": "natvm3",
+            "type": "String"
+        },
+        "networkInterfaces_VNIC_01_name": {
+            "defaultValue": "VNIC-01",
+            "type": "String"
+        },
+        "networkInterfaces_VNIC_02_name": {
+            "defaultValue": "VNIC-02",
+            "type": "String"
+        },
+        "networkInterfaces_VNIC_03_name": {
+            "defaultValue": "VNIC-03",
+            "type": "String"
+        },
+        "networkInterfaces_VNIC_04_name": {
+            "defaultValue": "VNIC-04",
+            "type": "String"
+        },
+        "networkInterfaces_VNIC_05_name": {
+            "defaultValue": "VNIC-05",
+            "type": "String"
+        },
+        "fwVmSize": {
+        	"type": "string",
+        	"defaultValue": "Standard_D4",
+      		"allowedValues": [
+        		"Standard_D3",
+        		"Standard_D4"
+      		],
+      "metadata": {
+        "description": "This is the size of PAN's firewall VM"
+      		}
+    	},
+    	"IPAddressPrefix": {
+      		"type": "string",
+      		"defaultValue": "10.5",
+      		"metadata": {
+        		"description": "Default IP address prefix"
+      			}
+      	
+    	},
+    	"publicIPAddress_vmseries_name": {
+            "defaultValue": "fwadminpanw",
+            "type": "String"
+        },
+        "publicIPAddress_vmseries_Type": {
+	      	"type": "string",
+    	  	"defaultValue": "Dynamic",
+      		"allowedValues": [
+        		"Dynamic",
+        		"Static"
+      		],
+      		"metadata": {
+        		"description": "Public IP type for the VM series Management interface"
+      		}
+    	},
+        "publicIPAddress_NATVM1_name": {
+            "defaultValue": "NATVM1",
+            "type": "String"
+        },
+        "publicIPAddress_NATVM1_Type": {
+	      	"type": "string",
+    	  	"defaultValue": "Dynamic",
+      		"allowedValues": [
+        		"Dynamic",
+        		"Static"
+      		],
+      		"metadata": {
+        		"description": "Public IP type for the Global Protect interface"
+      		}
+    	},
+        "publicIPAddress_NATVM2_name": {
+            "defaultValue": "NATVM2",
+            "type": "String"
+        },
+        "publicIPAddress_NATVM2_Type": {
+	      	"type": "string",
+    	  	"defaultValue": "Dynamic",
+      		"allowedValues": [
+        		"Dynamic",
+        		"Static"
+      		],
+      		"metadata": {
+        		"description": "Public IP type for the IPSEC interface"
+      		}
+    	},
+        
+    	
+    	"publicIPAddress_VIP1_name": {
+            "defaultValue": "VIP1_LB",
+            "type": "String"
+        },
+        "publicIPAddress_VIP1_Type": {
+	      	"type": "string",
+    	  	"defaultValue": "Dynamic",
+      		"allowedValues": [
+        		"Dynamic",
+        		"Static"
+      		],
+      		"metadata": {
+        		"description": "Public IP type for the VIP1"
+      		}
+    	},
+    	
+    	"publicIPAddress_VIP2_name": {
+            "defaultValue": "VIP2_LB",
+            "type": "String"
+        },
+        "publicIPAddress_VIP2_Type": {
+	      	"type": "string",
+    	  	"defaultValue": "Dynamic",
+      		"allowedValues": [
+        		"Dynamic",
+        		"Static"
+      		],
+      		"metadata": {
+        		"description": "Public IP type for the VIP2"
+      		}
+    	},
+        
+        "routeTables_DB_to_FW_name": {
+            "defaultValue": "DB-to-FW",
+            "type": "String"
+        },
+        "routeTables_FWUntrust_to_NAT1_name": {
+            "defaultValue": "FWUntrust-to-NAT1",
+            "type": "String"
+        },
+        "routeTables_FWVPN_TO_NAT2_name": {
+            "defaultValue": "FWVPN-TO-NAT2",
+            "type": "String"
+        },
+        "routeTables_FWDMZ_TO_NAT3_name": {
+            "defaultValue": "FWDMZ-TO-NAT3",
+            "type": "String"
+        },
+        "routeTables_NAT1_to_FWUntrust_name": {
+            "defaultValue": "NAT1-to-FWUntrust",
+            "type": "String"
+        },
+        "routeTables_NAT2_to_FWVPN_name": {
+            "defaultValue": "NAT2-to-FWVPN",
+            "type": "String"
+        },
+        "routeTables_NAT3_to_FWDMZ_name": {
+            "defaultValue": "NAT3-to-FWDMZ",
+            "type": "String"
+        },
+        "routeTables_Trust_to_Intranetwork_name": {
+        	"defaultValue": "Trust_to_Intranetwork",
+            "type": "String"
+        },
+        "routeTables_Web_to_FW_name": {
+            "defaultValue": "Web-to-FW",
+            "type": "String"
+        },
+        "virtualNetworks_panvnet_name": {
+            "defaultValue": "panvnet",
+            "type": "String"
+        },
+        "storageAccounts_storageaccount_name": {
+            "defaultValue": "storageaccountpanw",
+            "type": "String"
+        }
+    },
+    "variables": {
+    "availabilitySetName": "myAvSet",
+    "lbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('loadbalancer_name'))]",
+    "publicIPAddressID1": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddress_VIP1_name'))]",
+    "publicIPAddressID2": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddress_VIP2_name'))]",
+    "frontEndIPConfigID1": "[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontend1')]",
+    "frontEndIPConfigID2": "[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontend2')]",
+    "apiVersion" : "2015-06-15"
+    },
+    "resources": [
+    {
+	      "type": "Microsoft.Compute/availabilitySets",
+    	  "name": "[variables('availabilitySetName')]",
+    	  "apiVersion": "2015-06-15",
+    	  "location": "[resourceGroup().location]",
+    	  "properties": {
+    	                  "platformUpdateDomainCount": 5,
+                "platformFaultDomainCount": 3
+    	  }
+    	  
+    	  },     
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_database_vm_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_A1"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "14.04.2-LTS",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_database_vm_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_storageaccount_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_database_vm_name'),'.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_database_vm_name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_database_vm_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+            	"[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storageaccount_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_database_vm_name'))]"]
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_NATVM1_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                    "hardwareProfile": {
+                    "vmSize": "[parameters('gvmsize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "14.04.2-LTS",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_NATVM1_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_storageaccount_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_NATVM1_name'),'.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_NATVM1_name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_natvm1_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+         	   "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storageaccount_name'))]",
+	           "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_natvm1_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_NATVM2_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('gvmsize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "14.04.2-LTS",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_NATVM2_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_storageaccount_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_NATVM2_name'),'.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_NATVM2_name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_natvm2_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+            	"[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storageaccount_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_natvm2_name'))]"
+            ]
+        },
+        
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_NATVM3_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "availabilitySet": {
+            	"id": "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetName'))]"
+          		},
+                "hardwareProfile": {
+                    "vmSize": "[parameters('gvmsize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "14.04.2-LTS",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_NATVM3_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_storageaccount_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_NATVM3_name'),'.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_NATVM3_name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_natvm3_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+            	"[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storageaccount_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_natvm3_name'))]"]
+        },
+        
+        
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_VMSeries_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "plan": {
+                "name": "byol",
+                "product": "vmseries1",
+                "publisher": "paloaltonetworks"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('fwVmSize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "paloaltonetworks",
+                        "offer": "vmseries1",
+                        "sku": "byol",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat('OSDisk-', parameters('virtualMachines_VMSeries_name'))]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_storageaccount_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_VMSeries_name'),'.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_VMSeries_name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "properties": {
+                                "primary": true
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VNIC_01_name'))]"
+                        },
+                        {
+                            "properties": {
+                                "primary": false
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VNIC_02_name'))]"
+                        },
+                        {
+                            "properties": {
+                                "primary": false
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VNIC_03_name'))]"
+                        },
+                        {
+                            "properties": {
+                                "primary": false
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VNIC_04_name'))]"
+                        },
+                        {
+                            "properties": {
+                                "primary": false
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VNIC_05_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+	            "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storageaccount_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VNIC_01_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VNIC_02_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VNIC_03_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VNIC_04_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VNIC_05_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_webserver_vm_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_A1"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "14.04.2-LTS",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_webserver_vm_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_storageaccount_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_webserver_vm_name'),'.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_webserver_vm_name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_webserver_vm_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+            	"[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_storageaccount_name'))]",
+            	"[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_webserver_vm_name'))]"
+            ]
+        },
+        
+        
+        
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_database_vm_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[concat(parameters('IPAddressPrefix'),'.4.4')]",
+                            "privateIPAllocationMethod": "Static",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name')), '/subnets/DB')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false
+            },
+            "dependsOn": [
+            "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_natvm1_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[concat(parameters('IPAddressPrefix'),'.6.4')]",
+                            "privateIPAllocationMethod": "Static",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddress_NATVM1_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name')), '/subnets/NAT1')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            },
+            "dependsOn": [
+    	        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddress_NATVM1_name'))]",
+	            "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_natvm2_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[concat(parameters('IPAddressPrefix'),'.7.4')]",
+                            "privateIPAllocationMethod": "Static",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddress_NATVM2_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name')), '/subnets/NAT2')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            },
+            "dependsOn": [
+            	"[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddress_NATVM2_name'))]",
+				"[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+            
+            ]
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_natvm3_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[concat(parameters('IPAddressPrefix'),'.8.4')]",
+                            "privateIPAllocationMethod": "Static",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name')), '/subnets/NAT3')]"
+                            }
+                        },
+                        "loadBalancerBackendAddressPools": [
+              {
+                "id": "[concat('Microsoft.Network/loadBalancers/', parameters('loadbalancer_name'), '/backendAddressPools/loadBalancerBackEnd')]"
+              }
+            ],
+            			"loadBalancerInboundNatRules": [
+                		{
+                  			"id": "[concat(variables('lbID'),'/inboundNatRules/SSH1')]"
+                		},
+                		{
+                  			"id": "[concat(variables('lbID'),'/inboundNatRules/SSH2')]"
+                		}
+                		
+              			]
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+            ]
+        },
+        {
+      "apiVersion": "2015-06-15",
+      "name": "[parameters('loadbalancer_name')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+		    "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+                ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "loadBalancerFrontEnd1",
+            "properties": {
+            	"privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[variables('publicIPAddressID1')]"
+              }
+            }
+          },
+          {
+            "name": "loadBalancerFrontEnd2",
+            "privateIPAllocationMethod": "Dynamic",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[variables('publicIPAddressID2')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "LoadBalancerBackend"
+          }
+        ],
+        "loadBalancingRules": [],
+                "probes": [],
+                "inboundNatRules": [
+                    {
+                        "name": "SSH1",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('frontEndIPConfigID1')]"
+                            },
+                            "frontendPort": 22,
+                            "backendPort": 22,
+                            "protocol": "Tcp"
+                        }
+                    },
+                    {
+                        "name": "SSH2",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('frontEndIPConfigID2')]"
+                            },
+                            "frontendPort": 22,
+                            "backendPort": 23,
+                            "protocol": "Tcp"
+                        }
+                    }
+                ],
+                "outboundNatRules": [],
+                "inboundNatPools": []
+      }
+    },      
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_VNIC_01_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[concat(parameters('IPAddressPrefix'),'.0.4')]",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddress_vmseries_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name')), '/subnets/MGMT')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            },
+            "dependsOn": [
+            "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddress_vmseries_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_VNIC_02_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[concat(parameters('IPAddressPrefix'),'.1.4')]",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name')), '/subnets/Untrust')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_VNIC_03_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[concat(parameters('IPAddressPrefix'),'.2.4')]",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name')), '/subnets/VPN')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_VNIC_04_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name')), '/subnets/Trust')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_VNIC_05_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[concat(parameters('IPAddressPrefix'),'.8.4')]",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name')), '/subnets/DMZ')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": true
+            },
+            "dependsOn": [
+                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+			]
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_webserver_vm_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[concat(parameters('IPAddressPrefix'),'.5.4')]",
+                            "privateIPAllocationMethod": "Static",
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name')), '/subnets/Web')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false
+            },
+            "dependsOn": [
+                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_panvnet_name'))]"
+
+            ]
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddress_vmseries_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "[parameters('publicIPAddress_vmseries_Type')]",
+                "dnsSettings": {
+      				"domainNameLabel": "[parameters('dnsNameforVMSeries')]"
+    			},
+            	"idleTimeoutInMinutes": 4
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddress_NATVM1_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "[parameters('publicIPAddress_NATVM1_Type')]",
+                "dnsSettings": {
+      				"domainNameLabel": "[parameters('dnsNameforNATVM1')]"
+    			},
+                "idleTimeoutInMinutes": 4
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddress_NATVM2_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "[parameters('publicIPAddress_NATVM2_Type')]",
+                "dnsSettings": {
+      				"domainNameLabel": "[parameters('dnsNameforNATVM2')]"
+    			},
+                "idleTimeoutInMinutes": 4
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddress_VIP1_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "[parameters('publicIPAddress_VIP1_Type')]",
+                "dnsSettings": {
+      				"domainNameLabel": "[parameters('dnsNameForVIP1')]"
+    			},
+                "idleTimeoutInMinutes": 4
+            },
+            "dependsOn": []
+        },
+        {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[parameters('publicIPAddress_VIP2_name')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('publicIPAddress_VIP2_Type')]",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('dnsNameForVIP2')]"
+        }
+      }
+    },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('routeTables_DB_to_FW_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "DB-Default-Route",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    },
+                    {
+                        "name": "DB-to-Firewall-NAT1",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.6.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    },
+                    {
+                        "name": "DB-to-Firewall-NAT2",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.7.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    },
+                    {
+                        "name": "DB-to-Firewall-NAT3",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.8.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    },
+                    {
+                        "name": "DB-to-Firewall-Web",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.5.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('routeTables_FWUntrust_to_NAT1_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "FirewallUntrustTONat1",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.6.4')]"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('routeTables_FWVPN_TO_NAT2_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "FirewallVPNTONAT2",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.7.4')]"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+                {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('routeTables_FWDMZ_TO_NAT3_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "FirewallDMZTONAT3",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.8.4')]"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('routeTables_NAT1_to_FWUntrust_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "NAT1-TO-FIREWALLUNTRUST",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.1.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.1.4')]"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('routeTables_NAT2_to_FWVPN_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "NAT2-TO-FIREWALLVPN",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.7.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.7.4')]"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('routeTables_NAT3_to_FWDMZ_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "NAT3-TO-FIREWALLDMZ",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.8.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.8.4')]"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        
+        
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('routeTables_Trust_to_Intranetwork_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "[parameters('routeTables_Trust_to_Intranetwork_name')]",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('routeTables_Web_to_FW_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "web-default-route",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    },
+                    {
+                        "name": "Web-to-Firewall-DB",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.4.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    },
+                    {
+                        "name": "web-to-firewall-NAT1",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.6.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    },
+                    {
+                        "name": "web-to-firewall-NAT2",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.7.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    },
+                    {
+                        "name": "web-to-firewall-NAT3",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.8.0/24')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[concat(parameters('IPAddressPrefix'),'.3.4')]"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworks_panvnet_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[concat(parameters('IPAddressPrefix'),'.0.0/16')]"
+                    ]
+                },
+                "dhcpOptions": {
+                    "dnsServers": []
+                },
+                "subnets": [
+                    {
+                        "name": "MGMT",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.0.0/24')]"
+                        }
+                    },
+                    {
+                        "name": "Untrust",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.1.0/24')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_FWUntrust_to_NAT1_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "VPN",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.2.0/24')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_FWVPN_TO_NAT2_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Trust",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.3.0/24')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_Trust_to_Intranetwork_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "DB",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.4.0/24')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_DB_to_FW_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Web",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.5.0/24')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_Web_to_FW_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "NAT1",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.6.0/24')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_NAT1_to_FWUntrust_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "NAT2",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.7.0/24')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_NAT2_to_FWVPN_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "NAT3",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.8.0/24')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_NAT3_to_FWDMZ_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "DMZ",
+                        "properties": {
+                            "addressPrefix": "[concat(parameters('IPAddressPrefix'),'.9.0/24')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_FWDMZ_TO_NAT3_name'))]"
+                            }
+                        }
+                    }
+                ]
+            },
+            "dependsOn": [
+	        	 "[concat('Microsoft.Network/routeTables/', parameters('routeTables_FWUntrust_to_NAT1_name'))]",
+    		     "[concat('Microsoft.Network/routeTables/', parameters('routeTables_FWVPN_TO_NAT2_name'))]",
+		         "[concat('Microsoft.Network/routeTables/', parameters('routeTables_Trust_to_Intranetwork_name'))]",
+        		 "[concat('Microsoft.Network/routeTables/', parameters('routeTables_DB_to_FW_name'))]",
+        		 "[concat('Microsoft.Network/routeTables/', parameters('routeTables_Web_to_FW_name'))]",
+        		 "[concat('Microsoft.Network/routeTables/', parameters('routeTables_NAT1_to_FWUntrust_name'))]",
+        		 "[concat('Microsoft.Network/routeTables/', parameters('routeTables_NAT2_to_FWVPN_name'))]",
+        		 "[concat('Microsoft.Network/routeTables/', parameters('routeTables_NAT3_to_FWDMZ_name'))]",
+        		 "[concat('Microsoft.Network/routeTables/', parameters('routeTables_FWDMZ_TO_NAT3_name'))]"      		 
+            
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_storageaccount_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "properties": {},
+            "dependsOn": []
+        },
+        
+        { 
+        "name": "[concat(parameters('virtualMachines_NATVM1_name'),'/installcustomscript')]",
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "apiVersion": "2015-05-01-preview",
+        "location": "[resourceGroup().location]",
+        "dependsOn": ["[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachines_NATVM1_name'))]"],
+        "properties":
+         {   
+              "publisher": "Microsoft.OSTCExtensions",
+              "type": "CustomScriptForLinux",
+              "typeHandlerVersion": "1.2",
+              "settings": {
+                 "fileUris": ["https://raw.githubusercontent.com/ojmarzinho/NATVMsh/master/NATVM1.sh"],
+                 "commandToExecute": "[concat('/bin/bash NATVM1.sh ', parameters('IPAddressPrefix'))]"
+             }
+        }
+     },
+     { 
+        "name": "[concat(parameters('virtualMachines_NATVM2_name'),'/installcustomscript')]",
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "apiVersion": "2015-05-01-preview",
+        "location": "[resourceGroup().location]",
+        "dependsOn": ["[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachines_NATVM2_name'))]"],
+        "properties":
+         {   
+              "publisher": "Microsoft.OSTCExtensions",
+              "type": "CustomScriptForLinux",
+              "typeHandlerVersion": "1.2",
+              "settings": {
+                 "fileUris": ["https://raw.githubusercontent.com/ojmarzinho/NATVMsh/master/NATVM2.sh"],
+                 "commandToExecute": "[concat('/bin/bash NATVM2.sh ', parameters('IPAddressPrefix'))]"
+             }
+        }
+     },
+     
+     { 
+        "name": "[concat(parameters('virtualMachines_NATVM3_name'),'/installcustomscript')]",
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "apiVersion": "2015-05-01-preview",
+        "location": "[resourceGroup().location]",
+        "dependsOn": ["[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachines_NATVM3_name'))]"],
+        "properties":
+         {   
+              "publisher": "Microsoft.OSTCExtensions",
+              "type": "CustomScriptForLinux",
+              "typeHandlerVersion": "1.2",
+              "settings": {
+                 "fileUris": ["https://raw.githubusercontent.com/ojmarzinho/NATVMsh/master/NATVM3.sh"],
+                 "commandToExecute": "[concat('/bin/bash NATVM3.sh ', parameters('IPAddressPrefix'))]"
+             }
+        }
+     }
+        
+        
+    ]
+}
